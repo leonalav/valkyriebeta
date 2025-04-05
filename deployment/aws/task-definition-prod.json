@@ -1,0 +1,141 @@
+{
+  "family": "llm-service-production",
+  "executionRoleArn": "arn:aws:iam::123456789012:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::123456789012:role/LLMServiceRole",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "llm-inference-service",
+      "image": "${REGISTRY}/${IMAGE_NAME}:${TAG}",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/llm-service-production",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "environment": [
+        {
+          "name": "ENVIRONMENT",
+          "value": "production"
+        },
+        {
+          "name": "MODEL_PATH",
+          "value": "/models/model.safetensors"
+        },
+        {
+          "name": "CORS_ORIGINS",
+          "value": "[\"https://api.example.com\"]"
+        },
+        {
+          "name": "RATE_LIMIT_RPM",
+          "value": "120"
+        },
+        {
+          "name": "RATE_LIMIT_BURST",
+          "value": "20"
+        },
+        {
+          "name": "LOG_LEVEL",
+          "value": "INFO"
+        },
+        {
+          "name": "REDIS_URL",
+          "value": "redis://redis.internal:6379/0"
+        },
+        {
+          "name": "PROMETHEUS_MULTIPROC_DIR",
+          "value": "/tmp"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:123456789012:secret:llm-service/api-key:value::"
+        }
+      ],
+      "cpu": 4096,
+      "memory": 16384,
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:8000/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      },
+      "ulimits": [
+        {
+          "name": "nofile",
+          "softLimit": 65536,
+          "hardLimit": 65536
+        }
+      ]
+    },
+    {
+      "name": "prometheus-exporter",
+      "image": "prom/prometheus-pushgateway:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 9091,
+          "hostPort": 9091,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/llm-service-production",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "prometheus"
+        }
+      },
+      "cpu": 256,
+      "memory": 512
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "4096",
+  "memory": "16384",
+  "tags": [
+    {
+      "key": "Environment",
+      "value": "Production"
+    },
+    {
+      "key": "Service",
+      "value": "LLMInference"
+    }
+  ],
+  "volumes": [
+    {
+      "name": "models",
+      "efsVolumeConfiguration": {
+        "fileSystemId": "fs-12345678",
+        "rootDirectory": "/models",
+        "transitEncryption": "ENABLED",
+        "authorizationConfig": {
+          "iam": "ENABLED"
+        }
+      }
+    }
+  ],
+  "placementConstraints": [],
+  "ephemeralStorage": {
+    "sizeInGiB": 100
+  }
+} 

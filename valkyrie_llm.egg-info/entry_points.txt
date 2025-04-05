@@ -1,0 +1,4 @@
+[console_scripts]
+valkyrie-inference = valkyrie_llm.cli.inference:main
+valkyrie-train = valkyrie_llm.cli.train:main
+valkyrie-train-fineweb = valkyrie_llm.cli.train_fineweb:main

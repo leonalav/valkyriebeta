@@ -1,0 +1,18 @@
+include LICENSE
+include README.md
+include README_*.md
+include requirements.txt
+include requirements_*.txt
+include setup.py
+include MANIFEST.in
+
+recursive-include valkyrie_llm *.py
+recursive-include valkyrie_llm/scripts *.py *.sh
+
+recursive-include docs *.md *.rst *.txt
+recursive-include examples *.py *.ipynb
+
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.pyo 

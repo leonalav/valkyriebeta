@@ -1,0 +1,13 @@
+torch>=2.0.0
+transformers>=4.30.0
+datasets>=2.12.0
+numpy>=1.24.0
+tqdm>=4.65.0
+wandb>=0.15.4
+# RWKV-specific dependencies
+einops>=0.6.1
+triton>=2.0.0
+ninja>=1.11.0
+# For CUDA kernel optimizations
+# cupy>=12.0.0 # Optional, uncomment if using CUDA kernel optimizations
+# torch-scatter>=2.1.1 # Optional, uncomment if using CUDA kernel optimizations 

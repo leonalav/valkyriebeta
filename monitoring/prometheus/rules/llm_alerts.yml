@@ -1,0 +1,164 @@
+groups:
+  - name: llm_alerts
+    rules:
+      # High error rate alerts
+      - alert: LLMHighErrorRate
+        expr: rate(llm_errors_total[5m]) / rate(llm_inference_requests[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "LLM API error rate is above 5% ({{ $value | printf \"%.2f\" }})"
+          
+      - alert: LLMCriticalErrorRate
+        expr: rate(llm_errors_total[5m]) / rate(llm_inference_requests[5m]) > 0.15
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical error rate detected"
+          description: "LLM API error rate is above 15% ({{ $value | printf \"%.2f\" }})"
+          
+      # High latency alerts
+      - alert: LLMHighLatency
+        expr: histogram_quantile(0.95, sum(rate(llm_inference_latency_seconds_bucket[5m])) by (le)) > 3
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency detected"
+          description: "LLM API p95 latency is above 3 seconds ({{ $value | printf \"%.2f\" }}s)"
+          
+      - alert: LLMCriticalLatency
+        expr: histogram_quantile(0.95, sum(rate(llm_inference_latency_seconds_bucket[5m])) by (le)) > 10
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical latency detected"
+          description: "LLM API p95 latency is above 10 seconds ({{ $value | printf \"%.2f\" }}s)"
+          
+      # Request rate alerts
+      - alert: LLMHighRequestRate
+        expr: sum(rate(llm_inference_requests[5m])) > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High request rate detected"
+          description: "LLM API is receiving more than 100 requests per second ({{ $value | printf \"%.2f\" }} req/s)"
+          
+      # Low throughput alerts
+      - alert: LLMThroughputDrop
+        expr: avg_over_time(llm_tokens_per_second[5m]) < 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "LLM throughput drop detected"
+          description: "LLM API throughput dropped below 5 tokens per second ({{ $value | printf \"%.2f\" }} tokens/s)"
+          
+      # Resource usage alerts
+      - alert: LLMHighCPUUsage
+        expr: avg by(instance) (rate(process_cpu_seconds_total{job="llm-api"}[5m]) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "LLM API CPU usage is above 80% ({{ $value | printf \"%.2f\" }}%)"
+          
+      - alert: LLMHighMemoryUsage
+        expr: (process_resident_memory_bytes{job="llm-api"} / container_memory_usage_bytes{name="llm-inference-api"}) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "LLM API memory usage is above 85% ({{ $value | printf \"%.2f\" }}%)"
+          
+      - alert: LLMHighGPUMemoryUsage
+        expr: llm_gpu_memory_used_bytes / llm_gpu_memory_total_bytes * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High GPU memory usage detected"
+          description: "LLM API GPU memory usage is above 90% ({{ $value | printf \"%.2f\" }}%)"
+          
+      # API health alerts
+      - alert: LLMAPIDown
+        expr: up{job="llm-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "LLM API is down"
+          description: "LLM API has been down for more than 1 minute"
+          
+      - alert: LLMAPIRepeatedRestart
+        expr: changes(process_start_time_seconds{job="llm-api"}[15m]) > 3
+        labels:
+          severity: warning
+        annotations:
+          summary: "LLM API repeated restarts"
+          description: "LLM API has restarted {{ $value }} times in the last 15 minutes"
+          
+      # Queue alerts
+      - alert: LLMQueueBacklog
+        expr: llm_queue_size > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Request queue backlog detected"
+          description: "LLM API request queue has more than 50 pending requests ({{ $value }})"
+          
+      - alert: LLMQueueWaitTime
+        expr: histogram_quantile(0.95, sum(rate(llm_queue_wait_time_seconds_bucket[5m])) by (le)) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High queue wait time detected"
+          description: "LLM API queue wait time p95 is above 10 seconds ({{ $value | printf \"%.2f\" }}s)"
+          
+      # Rate limiting alerts
+      - alert: LLMHighRateLimiting
+        expr: rate(llm_rate_limited_requests[5m]) / rate(llm_inference_requests[5m]) > 0.1
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate limiting detected"
+          description: "More than 10% of requests are being rate limited ({{ $value | printf \"%.2f\" }}%)"
+          
+  - name: redis_alerts
+    rules:
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis has been down for more than 1 minute"
+          
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis high memory usage"
+          description: "Redis memory usage is above 80% ({{ $value | printf \"%.2f\" }}%)"
+          
+      - alert: RedisRejectedConnections
+        expr: rate(redis_rejected_connections_total[1m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis is rejecting connections"
+          description: "Redis is rejecting connections ({{ $value }} connections/s)" 

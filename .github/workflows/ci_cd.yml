@@ -1,0 +1,203 @@
+name: NanoGPT CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  lint:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black isort mypy
+          pip install -r requirements.txt
+
+      - name: Run linting
+        run: |
+          flake8 model/ utils/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          black --check model/ utils/ tests/
+          isort --check-only model/ utils/ tests/
+
+      - name: Run type checking
+        run: |
+          mypy model/ utils/ --ignore-missing-imports
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov bandit safety
+          pip install -r requirements.txt
+
+      - name: Security scan
+        run: |
+          bandit -r model/ utils/ -ll
+          safety check --full-report
+
+      - name: Run tests
+        run: |
+          pytest tests/ -v --cov=model --cov=utils --cov-report=xml
+          pytest tests/e2e/ -v --cov-append --cov-report=xml
+
+      - name: Check test coverage
+        run: |
+          python -m pytest --cov-fail-under=80
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: true
+
+  load_test:
+    name: Load Testing
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install locust
+          pip install -r requirements.txt
+
+      - name: Run load test
+        run: |
+          locust -f tests/load_test.py --headless -u 100 -r 10 --run-time 1m --host http://localhost:8000
+          python tests/check_load_results.py
+
+  build:
+    name: Build Package
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build wheel setuptools
+
+      - name: Build package
+        run: |
+          python -m build
+
+      - name: Store built package
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Download built package
+        uses: actions/download-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Install package and dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          pip install dist/*.whl
+
+      - name: Run basic model test
+        run: |
+          python -c "from model.core_model import EnhancedLanguageModel; from ..config.architecture_config import ArchitectureConfig; config = ArchitectureConfig(hidden_size=128, vocab_size=10000); model = EnhancedLanguageModel(config); print('Model initialized successfully')"
+
+  deploy:
+    name: Deploy (on main branch only)
+    runs-on: ubuntu-latest
+    needs: integration
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Create tag based on version
+        id: tag_version
+        run: |
+          # Extract version from setup.py
+          VERSION=$(grep -m 1 "version=" setup.py | sed -E 's/.*version="(.*)".*/\1/')
+          echo "::set-output name=version::$VERSION"
+          git tag v$VERSION
+          git push origin v$VERSION
+
+      - name: Download built package
+        uses: actions/download-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+          tag_name: v${{ steps.tag_version.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 

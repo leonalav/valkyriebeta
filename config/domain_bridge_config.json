@@ -1,0 +1,40 @@
+{
+  "loaders": {
+    "load_math": {
+      "max_samples": 3000
+    },
+    "load_numinamath": {},
+    "load_scieval": {
+      "n_examples": 2000
+    },
+    "load_olympiad_bench": {
+      "filter_hard": true
+    },
+    "load_livecodebench": {
+      "difficulty": "medium"
+    },
+    "load_quant": {},
+    "load_curated_thoughts": {
+      "include_cot": true
+    },
+    "load_wildchat": {
+      "min_length": 200
+    }
+  },
+  "domain_weights": {
+    "math": 1.5,
+    "science": 1.2,
+    "coding": 1.3,
+    "logic": 1.1,
+    "reasoning": 1.4,
+    "general": 1.0
+  },
+  "train_ratio": 0.8,
+  "val_ratio": 0.1,
+  "test_ratio": 0.1,
+  "max_examples_per_domain": 5000,
+  "extract_vocab": true,
+  "vocab_size": 1000,
+  "seed": 42,
+  "output_dir": "data/domain_specific"
+} 

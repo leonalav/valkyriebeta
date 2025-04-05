@@ -1,0 +1,47 @@
+{
+    "model": {
+        "hidden_size": 768,
+        "num_layers": 12,
+        "num_heads": 12,
+        "vocab_size": 32000,
+        "max_seq_length": 1024,
+        "dropout": 0.1,
+        "use_rotary_embeddings": true,
+        "tie_weights": true
+    },
+    "training": {
+        "batch_size": 8,
+        "learning_rate": 5e-5,
+        "weight_decay": 0.01,
+        "num_train_epochs": 3,
+        "warmup_ratio": 0.1,
+        "gradient_accumulation_steps": 1,
+        "max_grad_norm": 1.0
+    },
+    "optimization": {
+        "use_mixed_precision": true,
+        "use_gradient_checkpointing": true,
+        "use_flash_attention": true,
+        "use_fused_adam": true,
+        "use_fused_layer_norm": true
+    },
+    "reasoning": {
+        "use_reasoning": false,
+        "reasoning_type": "adaptive",
+        "reasoning_strategies": [
+            "tree",
+            "recursive",
+            "neural_symbolic",
+            "knowledge",
+            "mcts"
+        ]
+    },
+    "domains": [
+        "general",
+        "science",
+        "medicine",
+        "finance",
+        "legal",
+        "technical"
+    ]
+} 

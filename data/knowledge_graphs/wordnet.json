@@ -1,0 +1,47 @@
+{
+  "entities": {
+    "0": {"name": "dog.n.01", "embedding_idx": 0, "definition": "a member of the genus Canis that has been domesticated by man since prehistoric times"},
+    "1": {"name": "cat.n.01", "embedding_idx": 1, "definition": "feline mammal usually having thick soft fur and no ability to roar"},
+    "2": {"name": "animal.n.01", "embedding_idx": 2, "definition": "a living organism characterized by voluntary movement"},
+    "3": {"name": "pet.n.01", "embedding_idx": 3, "definition": "a domesticated animal kept for companionship or amusement"},
+    "4": {"name": "mammal.n.01", "embedding_idx": 4, "definition": "warm-blooded vertebrate animals characterized by the production of milk in female mammary glands"},
+    "5": {"name": "canine.n.02", "embedding_idx": 5, "definition": "any of various fissiped mammals with nonretractile claws and typically long muzzles"},
+    "6": {"name": "feline.n.01", "embedding_idx": 6, "definition": "any of various lithe-bodied round-headed fissiped mammals, many with retractile claws"},
+    "7": {"name": "domestic_animal.n.01", "embedding_idx": 7, "definition": "any of various animals that have been tamed and made fit for a human environment"},
+    "8": {"name": "vertebrate.n.01", "embedding_idx": 8, "definition": "animals having a bony or cartilaginous skeleton with a segmented spinal column and a large brain"},
+    "9": {"name": "bark.v.01", "embedding_idx": 9, "definition": "the sound made by a dog"},
+    "10": {"name": "meow.v.01", "embedding_idx": 10, "definition": "the sound made by a cat"},
+    "11": {"name": "loyal.a.01", "embedding_idx": 11, "definition": "steadfast in allegiance or duty"},
+    "12": {"name": "independent.a.01", "embedding_idx": 12, "definition": "free from external control and constraint"},
+    "13": {"name": "companion.n.01", "embedding_idx": 13, "definition": "a person who accompanies or associates with another"},
+    "14": {"name": "guard.v.01", "embedding_idx": 14, "definition": "to watch over or shield from danger or harm"},
+    "15": {"name": "hunt.v.01", "embedding_idx": 15, "definition": "pursue for food or sport"}
+  },
+  "relations": {
+    "0": {"name": "hypernym", "embedding_idx": 100, "definition": "the generic term used to designate a whole class of specific instances"},
+    "1": {"name": "hyponym", "embedding_idx": 101, "definition": "the specific term used to designate a member of a class"},
+    "2": {"name": "part_meronym", "embedding_idx": 102, "definition": "the relation between a part and the whole"},
+    "3": {"name": "member_meronym", "embedding_idx": 103, "definition": "the relation between a member and its group"},
+    "4": {"name": "attribute", "embedding_idx": 104, "definition": "a quality or feature regarded as a characteristic"},
+    "5": {"name": "entailment", "embedding_idx": 105, "definition": "the relation between a verb and the verb it entails"},
+    "6": {"name": "similar_to", "embedding_idx": 106, "definition": "similar in meaning"}
+  },
+  "synsets": [
+    {"entity": "0", "relation": "0", "target": "5"},
+    {"entity": "5", "relation": "0", "target": "4"},
+    {"entity": "4", "relation": "0", "target": "8"},
+    {"entity": "8", "relation": "0", "target": "2"},
+    {"entity": "1", "relation": "0", "target": "6"},
+    {"entity": "6", "relation": "0", "target": "4"},
+    {"entity": "0", "relation": "0", "target": "7"},
+    {"entity": "1", "relation": "0", "target": "7"},
+    {"entity": "7", "relation": "0", "target": "3"},
+    {"entity": "0", "relation": "4", "target": "11"},
+    {"entity": "1", "relation": "4", "target": "12"},
+    {"entity": "0", "relation": "5", "target": "9"},
+    {"entity": "1", "relation": "5", "target": "10"},
+    {"entity": "0", "relation": "5", "target": "14"},
+    {"entity": "1", "relation": "5", "target": "15"},
+    {"entity": "3", "relation": "6", "target": "13"}
+  ]
+} 

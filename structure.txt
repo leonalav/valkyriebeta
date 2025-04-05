@@ -1,0 +1,18 @@
+logical_reasoning_llm/
+├── config/
+│   └── model_config.py
+├── model/
+│   ├── __init__.py
+│   ├── attention.py
+│   ├── transformer.py
+│   ├── crnn.py
+│   ├── logical_layers.py
+│   └── model.py
+├── training/
+│   ├── __init__.py
+│   ├── trainer.py
+│   └── curriculum.py
+├── utils/
+│   ├── __init__.py
+│   └── optimization.py
+└── requirements.txt

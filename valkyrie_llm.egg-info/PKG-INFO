@@ -1,0 +1,283 @@
+Metadata-Version: 2.4
+Name: valkyrie-llm
+Version: 0.1.0
+Summary: Valkyrie Language Learning Model with enhanced reasoning capabilities
+Author: abctest01
+Author-email: imperialgamer502@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: torch>=1.10.0
+Requires-Dist: transformers>=4.26.0
+Requires-Dist: datasets>=2.10.0
+Requires-Dist: numpy>=1.20.0
+Requires-Dist: scikit-learn>=1.1.0
+Requires-Dist: tqdm>=4.62.0
+Requires-Dist: matplotlib>=3.5.0
+Requires-Dist: networkx>=2.7.0
+Requires-Dist: torch-geometric>=2.2.0
+Requires-Dist: ogb>=1.3.5
+Requires-Dist: tensorboard>=2.10.0
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: safetensors>=0.3.0
+Requires-Dist: sentencepiece>=0.1.97
+Requires-Dist: peft>=0.4.0
+Requires-Dist: bitsandbytes>=0.35.0
+Requires-Dist: accelerate>=0.16.0
+Requires-Dist: flash-attn>=2.0.0; platform_system != "Windows"
+Requires-Dist: xformers>=0.0.18; platform_system != "Windows"
+Requires-Dist: triton>=2.0.0
+Requires-Dist: optimum>=1.12.0
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: cryptography>=41.0.0
+Requires-Dist: jsonlines>=3.1.0
+Requires-Dist: pyarrow>=12.0.0
+Requires-Dist: fsspec>=2023.1.0
+Requires-Dist: tokenizers>=0.14.0
+Requires-Dist: nltk>=3.7.0
+Requires-Dist: regex>=2022.4.24
+Requires-Dist: tiktoken>=0.3.3
+Requires-Dist: ray>=2.6.0
+Requires-Dist: psutil>=5.9.0
+Requires-Dist: wandb>=0.13.5
+Requires-Dist: mlflow>=2.7.0
+Requires-Dist: pytest>=7.0.0
+Requires-Dist: pytest-cov>=4.1.0
+Requires-Dist: hypothesis>=6.82.0
+Requires-Dist: pandas>=1.5.0
+Requires-Dist: rich>=13.6.0
+Requires-Dist: einops>=0.6.0
+Requires-Dist: fastapi>=0.104.1
+Requires-Dist: uvicorn>=0.24.0
+Requires-Dist: pydantic>=2.4.2
+Requires-Dist: requests>=2.31.0
+Requires-Dist: huggingface-hub>=0.17.3
+Requires-Dist: black>=23.10.0
+Requires-Dist: isort>=5.12.0
+Requires-Dist: flake8>=6.1.0
+Requires-Dist: mypy>=1.6.1
+Requires-Dist: pre-commit>=3.5.0
+Requires-Dist: torch-optimizer>=0.3.0
+Requires-Dist: coolname>=2.2.0
+Requires-Dist: trl>=0.7.2
+Requires-Dist: torchmetrics>=1.0.0
+Requires-Dist: packaging>=20.0
+Requires-Dist: dataclasses-json>=0.5.7
+Requires-Dist: onnx>=1.12.0
+Requires-Dist: onnxruntime>=1.11.0
+Requires-Dist: tensorflow>=2.8.0
+Requires-Dist: torch-xla>=1.12
+Requires-Dist: setuptools>=65.5.1
+Requires-Dist: wheel>=0.38.4
+Requires-Dist: scipy>=1.9.0
+Requires-Dist: ftfy>=6.1.1
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# ValkyrieLLM: LLM Framework with Advanced GNN Integration
+
+ValkyrieLLM is a powerful framework for integrating Large Language Models (LLMs) with advanced Graph Neural Networks (GNNs) for enhanced structured reasoning capabilities.
+
+## Key Features
+
+- **Advanced GNN Models**: Comprehensive suite of state-of-the-art GNN architectures
+  - Transformer-GNN (Graphormer)
+  - Heterogeneous Graph Transformer (HGT)
+  - DiffPool (Differentiable Pooling)
+  - Tree-Structured GNNs
+  - Edge-Enhanced GNN (EGNN)
+  - Contrastive Learning (GraphCL, InfoGraph)
+
+- **Seamless LLM Integration**: Bidirectional information flow between graphs and text
+  - Combined representation learning
+  - Joint training infrastructure
+  - Flexible architecture adapters
+
+- **Training Utilities**: Comprehensive tools for efficient model training
+  - Learning rate scheduling with warmup
+  - Gradient accumulation for stable training
+  - Mixed precision support
+  - Early stopping and checkpointing
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/valkyrie-llm.git
+cd valkyrie-llm
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+## Dependencies and Environment Setup
+
+ValkyrieLLM relies on several external libraries. The core dependencies include:
+
+- PyTorch for neural network operations
+- PyTorch Geometric for graph operations
+- Transformers for language models
+- OGB for graph benchmarks
+
+### Handling External Dependencies
+
+The example scripts include mock implementations to handle cases where PyTorch Geometric or OGB might not be installed:
+
+```python
+# Mock implementations for PyTorch Geometric objects
+class MockData:
+    """Mock implementation of PyTorch Geometric Data object."""
+    def __init__(self, x, edge_index, y=None, edge_attr=None):
+        self.x = x
+        self.edge_index = edge_index
+        self.y = y
+        self.edge_attr = edge_attr
+
+# Generate synthetic graph data for demos
+class MockGraphDataset:
+    """Mock dataset for graph data."""
+    def __init__(self, num_graphs=100, num_features=9, num_classes=2):
+        # Creates synthetic graph dataset for demonstration
+        ...
+```
+
+If you encounter import errors with PyTorch Geometric or OGB, you have two options:
+
+1. **Install the missing dependencies:**
+   ```bash
+   pip install torch-geometric
+   pip install ogb
+   ```
+
+2. **Use the mock implementations:**
+   The example scripts will automatically fall back to using mock implementations when the external libraries are not available.
+
+## Quick Start
+
+### Training a Standalone GNN Model
+
+```python
+from valkyrie_llm.model.gnn import GraphTransformer, TrainingConfig, GNNTrainer
+
+# Create model
+model = GraphTransformer(
+    in_channels=64,
+    hidden_channels=128,
+    out_channels=10,
+    num_layers=4,
+    num_heads=4,
+)
+
+# Configure training
+config = TrainingConfig(
+    learning_rate=1e-3,
+    batch_size=32,
+    epochs=100,
+    warmup_epochs=10,
+)
+
+# Train model
+trainer = GNNTrainer(model, config, train_loader, val_loader)
+history = trainer.train(criterion=loss_fn, metric_fn=accuracy_fn)
+```
+
+### Training an Integrated GNN-LLM
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
+from valkyrie_llm.model.gnn import GIN, TransformerGNNIntegration
+from valkyrie_llm.model.gnn_llm_trainer import GNNLLMTrainer
+
+# Load LLM
+tokenizer = AutoTokenizer.from_pretrained("gpt2")
+llm_model = AutoModelForCausalLM.from_pretrained("gpt2")
+
+# Create GNN model
+gnn_model = GIN(
+    in_channels=64,
+    hidden_channels=128,
+    out_channels=768,  # Match transformer dimension
+    num_layers=3,
+)
+
+# Create integration model
+integration_model = TransformerGNNIntegration(
+    transformer_dim=768,
+    graph_dim=64,
+    hidden_dim=128,
+    use_graph_attention=True,
+)
+
+# Setup training arguments
+training_args = TrainingArguments(
+    output_dir="./outputs",
+    per_device_train_batch_size=4,
+    learning_rate=5e-5,
+    num_train_epochs=3,
+)
+
+# Create trainer and train model
+trainer = GNNLLMTrainer(
+    llm_model=llm_model,
+    gnn_model=gnn_model,
+    integration_model=integration_model,
+    training_args=training_args,
+    train_dataset=train_dataset,
+    tokenizer=tokenizer,
+)
+
+trainer.train()
+```
+
+## Examples
+
+See the `valkyrie_llm/examples/` directory for complete training examples:
+
+- **gnn_training_example.py**: Training standalone GNN models
+- **gnn_llm_training_example.py**: Training integrated GNN-LLM models
+
+Run an example:
+
+```bash
+python -m valkyrie_llm.examples.gnn_training_example --model graphormer --dataset PROTEINS
+```
+
+## Supported GNN Architectures
+
+| Model | Description | Paper |
+|-------|-------------|-------|
+| GraphTransformer | Transformer-style self-attention for graphs | [Do Transformers Really Perform Bad for Graph Representation?](https://arxiv.org/abs/2106.05234) |
+| HGT | Specialized for heterogeneous graphs | [Heterogeneous Graph Transformer](https://arxiv.org/abs/2003.01332) |
+| DiffPool | Hierarchical graph representation learning | [Hierarchical Graph Representation Learning with Differentiable Pooling](https://arxiv.org/abs/1806.08804) |
+| TreeGNN | Specialized for tree-structured data | [Tree-LSTM](https://arxiv.org/abs/1503.00075) |
+| GraphCL | Contrastive learning with graph augmentations | [Graph Contrastive Learning with Augmentations](https://arxiv.org/abs/2010.13902) |
+| EGNN | Edge-enhanced graph neural networks | [Edge-enhanced GNN for Molecule Properties](https://arxiv.org/abs/2010.09559) |
+
+## License
+
+[MIT License](LICENSE)
+
+## Citation
+
+If you use ValkyrieLLM in your research, please cite:
+
+```
+@software{valkyrie_llm,
+  title = {ValkyrieLLM: LLM Framework with Advanced GNN Integration},
+  author = {Your Name},
+  year = {2023},
+  url = {https://github.com/yourusername/valkyrie-llm},
+}
+```
+
+## Acknowledgments
+
+This project builds upon numerous open-source libraries and research papers in the fields of graph neural networks and language models.

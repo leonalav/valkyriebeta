@@ -1,0 +1,29 @@
+### Pre-Training Workflow ###
+
+python train_aio.py --use_knowledge_distillation --use_domain_specific_data --use_computational_efficiency --use_adaptive_reasoning
+
+1. Download and prepare datasets
+python scripts/download_datasets.py --save-format parquet --output-dir data/raw
+
+2. Process raw data into splits
+python scripts/prepare_data.py --data_root data/raw --output_root data/processed
+
+3. Final data preparation
+python scripts/process_data.py --input_dir data/processed --output_dir data/ready --mode train
+
+### Post-Training (Student Model) Workflow ###
+1. Ensure your custom LLM is trained and saved as .safetensors
+
+2. Process data for student model
+python scripts/process_data.py \
+    --input_dir data/processed \
+    --output_dir data/student_ready \
+    --mode student \
+    --student_model_path path/to/your/custom/model.safetensors
+
+3. (Optional) Run inference validation
+python scripts/process_data.py \
+    --input_dir data/student_ready \
+    --output_dir data/inference \
+    --mode inference \
+    --student_model_path path/to/your/custom/model.safetensors

@@ -1,0 +1,55 @@
+{
+  "training": {
+    "batch_size": 16,
+    "eval_batch_size": 32,
+    "num_epochs": 3,
+    "learning_rate": 5e-5,
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "gradient_accumulation_steps": 4,
+    "warmup_steps": 500,
+    "logging_steps": 10,
+    "save_steps": 500,
+    "save_total_limit": 3,
+    "fp16": true,
+    "num_workers": 4,
+    "seed": 42,
+    "use_domain_specific_data": true,
+    "domain_data_dir": "data/domain_specific",
+    "mixed_precision": true,
+    "mixed_precision_dtype": "float16",
+    "use_knowledge_distillation": true
+  },
+  "model": {
+    "model_type": "enhanced",
+    "hidden_size": 768,
+    "num_hidden_layers": 12,
+    "num_attention_heads": 12,
+    "intermediate_size": 3072,
+    "max_position_embeddings": 1024,
+    "vocab_size": 50257,
+    "use_adapter_modules": true,
+    "use_domain_adaptation": true
+  },
+  "knowledge_distillation": {
+    "alpha": 0.5,
+    "temperature": 2.0,
+    "distill_logits": true,
+    "distill_hidden_states": true,
+    "distill_attention": true,
+    "use_progressive_distillation": true,
+    "teacher_model_path": "path/to/teacher/model",
+    "adaptation_type": "domain_specific"
+  },
+  "computational_efficiency": {
+    "use_activation_checkpointing": true,
+    "use_efficient_attention": true,
+    "use_quantization": false,
+    "quantization_bits": 8,
+    "use_kv_cache": true,
+    "use_model_compiler": true,
+    "use_adaptive_batch_size": true,
+    "min_batch_size": 8,
+    "max_batch_size": 32
+  }
+} 
